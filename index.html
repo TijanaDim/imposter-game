@@ -1,151 +1,98 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Imposter Game</title>
   <style>
-    :root {
-      --bg: #ffffff;
-      --text: #000000;
-      --box: #f0f0f0;
-    }
-    body.dark {
-      --bg: #1e1e1e;
-      --text: #ffffff;
-      --box: #333333;
-    }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
-      transition: background 0.3s, color 0.3s;
-    }
-    h1 { text-align: center; }
+    body { font-family: Arial, sans-serif; margin: 30px; }
     .hidden { display: none; }
-    .question-box { margin-top: 30px; background: var(--box); padding: 20px; border-radius: 10px; }
-    button, select, textarea {
-      padding: 10px;
-      margin-top: 10px;
-      width: 100%;
-      max-width: 300px;
-      font-size: 16px;
-    }
-    #answers { margin-top: 20px; }
-    .answer-block { border-top: 1px solid #ccc; padding-top: 10px; }
-    #themeToggle {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      cursor: pointer;
-      padding: 8px 12px;
-      font-size: 14px;
-    }
+    .block { margin-top: 20px; }
+    button { padding: 10px 20px; font-weight: bold; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <button id="themeToggle" onclick="toggleTheme()">Toggle Theme</button>
-  <h1>🎭 Imposter Game</h1>
 
-  <div id="start-section">
-    <p>Select your player:</p>
-    <select id="playerSelect">
-      <option value="1">Player 1</option>
-      <option value="2">Player 2</option>
-      <option value="3">Player 3</option>
-      <option value="4">Player 4</option>
+  <h1>Imposter Game</h1>
+
+  <!-- Screen 1: Select Player -->
+  <div id="screen1">
+    <label for="player">Select your name:</label>
+    <select id="player">
+      <option value="">-- Choose player --</option>
+      <option value="Nikita">Nikita</option>
+      <option value="Andrej">Andrej</option>
+      <option value="Stefanija">Stefanija</option>
+      <option value="Tijana">Tijana</option>
+      <option value="Tamara">Tamara</option>
     </select>
-    <br><br>
-    <button onclick="startGame()">Start</button>
+    <button onclick="startGame()">Continue</button>
   </div>
 
-  <div id="game-section" class="hidden">
-    <div class="question-box">
-      <p><strong id="questionNumber"></strong></p>
-      <p id="question"></p>
-      <p><em id="translation"></em></p>
-      <textarea id="playerAnswer" placeholder="Type your answer here..."></textarea>
-      <button onclick="submitAnswer()">Submit</button>
-    </div>
+  <!-- Screen 2: Player gets question -->
+  <div id="screen2" class="hidden">
+    <h2>Question <span id="questionNumber">1</span></h2>
+    <p id="playerQuestionEn"></p>
+    <p><i id="playerQuestionMk"></i></p>
+    <button onclick="revealShared()">Next</button>
   </div>
 
-  <div id="discussion-section" class="hidden">
-    <h3>Answers</h3>
-    <div id="answers"></div>
-    <button onclick="prevQuestion()">⬅ Previous</button>
-    <button onclick="nextQuestion()">Next ➡</button>
+  <!-- Screen 3: Shared question (non-imposter version) -->
+  <div id="screen3" class="hidden">
+    <h3>This is the question most players received:</h3>
+    <p id="sharedQuestionEn"></p>
+    <p><i id="sharedQuestionMk"></i></p>
+    <button onclick="nextRound()">Continue to Next Question</button>
   </div>
 
-  <script>
-    const regularQuestions = [{'en': "What's your favorite fruit?", 'mk': 'Кое е твоето омилено овошје?'}, {'en': 'Dream vacation destination?', 'mk': 'Каде би патувал/а на одмор од соништата?'}, {'en': 'Best pizza topping?', 'mk': 'Кој е најдобриот додаток на пица?'}, {'en': 'Ideal age to have a baby?', 'mk': 'Која е идеалната возраст за дете?'}, {'en': 'Favorite school subject?', 'mk': 'Омилен предмет во училиште?'}, {'en': 'Favorite board game?', 'mk': 'Омилена друштвена игра?'}, {'en': 'Go-to karaoke song?', 'mk': 'Песна што ја пееш на караоке?'}, {'en': "A place you'd love to live?", 'mk': 'Место каде би сакал/а да живееш?'}, {'en': 'Morning or night person?', 'mk': 'Дали си утрински или ноќен тип?'}, {'en': 'Favorite drink?', 'mk': 'Омилено пијалок?'}, {'en': 'Favorite movie?', 'mk': 'Омилен филм?'}, {'en': 'What animal would you be?', 'mk': 'Која животно би бил/а?'}, {'en': 'Preferred superpower?', 'mk': 'Која супермоќ би ја сакал/а?'}, {'en': 'What makes you laugh?', 'mk': 'Што те насмејува?'}, {'en': 'Favorite season?', 'mk': 'Омилена сезона?'}, {'en': 'First job you ever wanted?', 'mk': 'Прва работа што си сакал/а да ја работиш?'}, {'en': 'Favorite dessert?', 'mk': 'Омилен десерт?'}, {'en': 'What motivates you?', 'mk': 'Што те мотивира?'}, {'en': 'Go-to comfort food?', 'mk': 'Храна која те теши?'}, {'en': 'Favorite sport?', 'mk': 'Омилен спорт?'}, {'en': 'City or countryside?', 'mk': 'Град или село?'}, {'en': 'Hot or cold weather?', 'mk': 'Жешко или студено време?'}, {'en': 'Best childhood memory?', 'mk': 'Најубаво детско сеќавање?'}, {'en': "Something you're proud of?", 'mk': 'На што си горд/а?'}, {'en': 'If you had a time machine?', 'mk': 'Ако имаше машина на времето, што би направил/а?'}, {'en': 'Most used app?', 'mk': 'Најкористена апликација?'}, {'en': 'A song you love right now?', 'mk': 'Песна што ја обожаваш сега?'}, {'en': "Weirdest food you've tried?", 'mk': 'Најчудна храна што си пробал/а?'}, {'en': 'A country you want to visit?', 'mk': 'Земја што сакаш да ја посетиш?'}, {'en': 'One thing on your bucket list?', 'mk': 'Една работа од твојата листа на желби?'}];
+<script>
+const players = ["Nikita", "Andrej", "Stefanija", "Tijana", "Tamara"];
+let playerName = "";
+let currentIndex = 0;
 
-    const imposterQuestions = [{'en': "What's a fruit you dislike?", 'mk': 'Кое овошје не го сакаш?'}, {'en': "Worst place you've visited?", 'mk': 'Најлошо место што си го посетил/а?'}, {'en': 'Worst pizza topping?', 'mk': 'Кој е најлошиот додаток на пица?'}, {'en': 'What age is too early for a baby?', 'mk': 'Која возраст е прерана за дете?'}, {'en': 'Subject you hated in school?', 'mk': 'Предмет што не го поднесуваше во училиште?'}, {'en': 'Board game you find boring?', 'mk': 'Која друштвена игра ти е досадна?'}, {'en': 'A karaoke song you’d never sing?', 'mk': 'Песна што никогаш не би ја пеел/а на караоке?'}, {'en': 'A city you would never live in?', 'mk': 'Град каде никогаш не би живеел/а?'}, {'en': 'Worst time to wake up?', 'mk': 'Најлошо време за будење?'}, {'en': 'Drink you hate?', 'mk': 'Пијалок што не го сакаш?'}, {'en': 'Movie you regret watching?', 'mk': 'Филм што го жалиш што си го гледал/а?'}, {'en': 'Animal you fear?', 'mk': 'Животно од кое се плашиш?'}, {'en': 'Superpower you’d never want?', 'mk': 'Супермоќ што не би ја сакал/а?'}, {'en': 'Something that annoys you?', 'mk': 'Што те нервира?'}, {'en': 'Season you dislike?', 'mk': 'Сезона што не ти се допаѓа?'}, {'en': 'Job you’d never do?', 'mk': 'Работа што никогаш не би ја работел/а?'}, {'en': 'Dessert you avoid?', 'mk': 'Десерт што го избегнуваш?'}, {'en': 'What drains your energy?', 'mk': 'Што ти ја црпи енергијата?'}, {'en': 'Food you can’t stand?', 'mk': 'Храна што не можеш да ја поднесеш?'}, {'en': 'Sport you hate?', 'mk': 'Спорт што не го сакаш?'}, {'en': 'Place you’d never move to?', 'mk': 'Место каде никогаш не би се преселил/а?'}, {'en': 'Type of weather you hate?', 'mk': 'Временска состојба што ја мразиш?'}, {'en': 'A bad memory from childhood?', 'mk': 'Лошо сеќавање од детството?'}, {'en': 'Something you regret?', 'mk': 'На што жалиш?'}, {'en': 'Where would you never travel?', 'mk': 'Каде никогаш не би патувал/а?'}, {'en': 'App you dislike?', 'mk': 'Апликација што не ти се допаѓа?'}, {'en': 'Song you hate?', 'mk': 'Песна што ја мразиш?'}, {'en': 'Food you refused to eat?', 'mk': 'Храна што си одбил/а да ја јадеш?'}, {'en': 'Country you avoid?', 'mk': 'Земја што ја избегнуваш?'}, {'en': 'Something you’ll never do?', 'mk': 'Нешто што никогаш не би направил/а?'}];
+// 30 questions: { common, mk, imposter, imposterMk }
+const questions = [{"common": "What's your favorite fruit?", "mk": "Кое е твоето омилено овошје?", "imposter": "What's your least favorite fruit?", "imposterMk": "Кое овошје најмалку го сакаш?"}, {"common": "At what age would you like to retire?", "mk": "На која возраст би сакал да се пензионираш?", "imposter": "At what age would you like to start working?", "imposterMk": "На која возраст би сакал да почнеш да работиш?"}, {"common": "How much would someone have to pay you to shave your head?", "mk": "Колку би требало некој да ти плати за да ја избричиш главата?", "imposter": "How much would you pay someone to shave your head?", "imposterMk": "Колку би платил некој да ти ја избричи главата?"}, {"common": "What's a movie you love?", "mk": "Кој е филм што го сакаш?", "imposter": "What's a movie you dislike?", "imposterMk": "Кој е филм што не го сакаш?"}, {"common": "What's your dream travel destination?", "mk": "Која е твојата дестинација од соништата?", "imposter": "Where would you never want to travel?", "imposterMk": "Каде никогаш не би сакал да патуваш?"}];
 
-    let player = 1;
-    const imposter = Math.floor(Math.random() * 4) + 1;
-    let current = 0;
-    const answers = [];
+function startGame() {
+  const select = document.getElementById("player");
+  playerName = select.value;
+  if (!playerName) return alert("Please choose a name.");
+  showPlayerQuestion();
+}
 
-    function startGame() {
-      player = parseInt(document.getElementById('playerSelect').value);
-      document.getElementById('start-section').classList.add('hidden');
-      document.getElementById('game-section').classList.remove('hidden');
-      showQuestion();
-    }
+function showPlayerQuestion() {
+  document.getElementById("screen1").classList.add("hidden");
+  document.getElementById("screen2").classList.remove("hidden");
 
-    function showQuestion() {
-      const isImposter = player === imposter;
-      const qSet = isImposter ? imposterQuestions : regularQuestions;
-      document.getElementById('questionNumber').innerText = `Question ${current + 1} of 30:`;
-      document.getElementById('question').innerText = qSet[current].en;
-      document.getElementById('translation').innerText = qSet[current].mk;
-      document.getElementById('playerAnswer').value = '';
-    }
+  const q = questions[currentIndex];
+  const isImposter = Math.floor(Math.random() * players.length) === players.indexOf(playerName);
 
-    function submitAnswer() {
-      const answerText = document.getElementById('playerAnswer').value.trim();
-      if (!answerText) return alert("Please enter your answer.");
-      answers[current] = answers[current] || [];
-      answers[current].push(`Player ${player}: ${answerText}`);
-      document.getElementById('game-section').classList.add('hidden');
-      document.getElementById('discussion-section').classList.remove('hidden');
-      displayAnswers();
-    }
+  document.getElementById("questionNumber").textContent = currentIndex + 1;
+  document.getElementById("playerQuestionEn").textContent = isImposter ? q.imposter : q.common;
+  document.getElementById("playerQuestionMk").textContent = isImposter ? q.imposterMk : q.mk;
+}
 
-    function displayAnswers() {
-      const aBox = document.getElementById('answers');
-      aBox.innerHTML = '';
-      (answers[current] || []).forEach(ans => {
-        const div = document.createElement('div');
-        div.className = 'answer-block';
-        div.innerText = ans;
-        aBox.appendChild(div);
-      });
-    }
+function revealShared() {
+  document.getElementById("screen2").classList.add("hidden");
+  document.getElementById("screen3").classList.remove("hidden");
 
-    function nextQuestion() {
-      if (current < 29) {
-        current++;
-        document.getElementById('discussion-section').classList.add('hidden');
-        document.getElementById('game-section').classList.remove('hidden');
-        showQuestion();
-      }
-    }
+  const q = questions[currentIndex];
+  document.getElementById("sharedQuestionEn").textContent = q.common;
+  document.getElementById("sharedQuestionMk").textContent = q.mk;
+}
 
-    function prevQuestion() {
-      if (current > 0) {
-        current--;
-        document.getElementById('discussion-section').classList.add('hidden');
-        document.getElementById('game-section').classList.remove('hidden');
-        showQuestion();
-      }
-    }
+function nextRound() {
+  currentIndex++;
+  if (currentIndex >= questions.length) {
+    alert("Game Over! Thanks for playing.");
+    location.reload();
+    return;
+  }
+  showPlayerQuestion();
+  document.getElementById("screen3").classList.add("hidden");
+}
+</script>
 
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-    }
-  </script>
 </body>
 </html>
