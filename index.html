@@ -52,8 +52,38 @@ let playerName = "";
 let currentIndex = 0;
 
 // 30 questions: { common, mk, imposter, imposterMk }
-const questions = [{"common": "What's your favorite fruit?", "mk": "Кое е твоето омилено овошје?", "imposter": "What's your least favorite fruit?", "imposterMk": "Кое овошје најмалку го сакаш?"}, {"common": "At what age would you like to retire?", "mk": "На која возраст би сакал да се пензионираш?", "imposter": "At what age would you like to start working?", "imposterMk": "На која возраст би сакал да почнеш да работиш?"}, {"common": "How much would someone have to pay you to shave your head?", "mk": "Колку би требало некој да ти плати за да ја избричиш главата?", "imposter": "How much would you pay someone to shave your head?", "imposterMk": "Колку би платил некој да ти ја избричи главата?"}, {"common": "What's a movie you love?", "mk": "Кој е филм што го сакаш?", "imposter": "What's a movie you dislike?", "imposterMk": "Кој е филм што не го сакаш?"}, {"common": "What's your dream travel destination?", "mk": "Која е твојата дестинација од соништата?", "imposter": "Where would you never want to travel?", "imposterMk": "Каде никогаш не би сакал да патуваш?"}];
-
+const questions = [
+  { common: "What's your favorite fruit?", mk: "Кое е твоето омилено овошје?", imposter: "What's your least favorite fruit?", imposterMk: "Кое овошје најмалку го сакаш?" },
+  { common: "At what age would you like to retire?", mk: "На која возраст би сакал да се пензионираш?", imposter: "At what age would you like to start working?", imposterMk: "На која возраст би сакал да почнеш да работиш?" },
+  { common: "How much would someone have to pay you to shave your head?", mk: "Колку би требало некој да ти плати за да ја избричиш главата?", imposter: "How much would you pay someone to shave your head?", imposterMk: "Колку би платил некој да ти ја избричи главата?" },
+  { common: "What's a movie you love?", mk: "Кој е филм што го сакаш?", imposter: "What's a movie you dislike?", imposterMk: "Кој е филм што не го сакаш?" },
+  { common: "What's your dream travel destination?", mk: "Која е твојата дестинација од соништата?", imposter: "Where would you never want to travel?", imposterMk: "Каде никогаш не би сакал да патуваш?" },
+  { common: "What's your favorite dessert?", mk: "Кој е твојот омилен десерт?", imposter: "What's a dessert you hate?", imposterMk: "Кој десерт го мразиш?" },
+  { common: "Which season do you enjoy most?", mk: "Кое годишно време најмногу го сакаш?", imposter: "Which season makes you feel worst?", imposterMk: "Кое годишно време најмалку го сакаш?" },
+  { common: "What's your go-to pizza topping?", mk: "Кој е твојот омилен додаток на пица?", imposter: "What topping ruins pizza for you?", imposterMk: "Кој додаток ја уништува пицата?" },
+  { common: "What’s your favorite holiday?", mk: "Кој ти е омилен празник?", imposter: "Which holiday do you find overrated?", imposterMk: "Кој празник ти е преценет?" },
+  { common: "What's your ideal Saturday activity?", mk: "Што најмногу сакаш да правиш во сабота?", imposter: "What’s something you avoid on Saturdays?", imposterMk: "Што избегнуваш да правиш во сабота?" },
+  { common: "What type of music lifts your mood?", mk: "Каков тип музика ти го подобрува расположението?", imposter: "What music type annoys you?", imposterMk: "Кој музички жанр ти оди на нерви?" },
+  { common: "What’s your comfort food?", mk: "Која е храната која те утешува?", imposter: "Which food makes you feel sick?", imposterMk: "Која храна ти е одвратна?" },
+  { common: "What do you love about summer?", mk: "Што најмногу сакаш во лето?", imposter: "What do you hate about summer?", imposterMk: "Што најмногу мразиш во лето?" },
+  { common: "What’s a childhood cartoon you loved?", mk: "Кој цртан го обожаваше како дете?", imposter: "Which cartoon bored you?", imposterMk: "Кој цртан ти беше досаден?" },
+  { common: "What’s your favorite type of animal?", mk: "Кое животно ти е омилено?", imposter: "Which animal scares you?", imposterMk: "Од кое животно ти е страв?" },
+  { common: "What’s your favorite way to relax?", mk: "Како најчесто се релаксираш?", imposter: "What relaxes others but stresses you?", imposterMk: "Што ги релаксира другите, а тебе те нервира?" },
+  { common: "What's your favorite beverage?", mk: "Кое ти е омилено пијалок?", imposter: "Which drink would you never order?", imposterMk: "Кој пијалок никогаш не би го нарачал?" },
+  { common: "Which sport do you enjoy watching?", mk: "Кој спорт најмногу сакаш да гледаш?", imposter: "Which sport bores you?", imposterMk: "Кој спорт ти е најдосаден?" },
+  { common: "What’s your favorite app?", mk: "Која апликација најмногу ја користиш?", imposter: "Which app do you avoid?", imposterMk: "Која апликација ја избегнуваш?" },
+  { common: "What’s your ideal weekend trip?", mk: "Какво патување би сакал за викенд?", imposter: "Where would you never spend a weekend?", imposterMk: "Каде никогаш не би патувал за викенд?" },
+  { common: "What’s a job you admire?", mk: "Која професија ја почитуваш?", imposter: "Which job would you never do?", imposterMk: "Која професија никогаш не би ја работел?" },
+  { common: "What's your favorite ice cream flavor?", mk: "Кој е твојот омилен сладолед?", imposter: "What ice cream flavor do you hate?", imposterMk: "Кој сладолед го мразиш?" },
+  { common: "What’s your favorite childhood memory?", mk: "Кое е твоето најубаво детско сеќавање?", imposter: "What's a memory you'd rather forget?", imposterMk: "Кое детско сеќавање би сакал да го заборавиш?" },
+  { common: "What’s your favorite board game?", mk: "Која ти е омилена друштвена игра?", imposter: "Which board game is overrated?", imposterMk: "Која друштвена игра е преценета?" },
+  { common: "What's your favorite book?", mk: "Која ти е омилена книга?", imposter: "What book bored you to death?", imposterMk: "Која книга ти беше досадна?" },
+  { common: "Which color do you wear most?", mk: "Која боја најчесто ја носиш?", imposter: "Which color would you never wear?", imposterMk: "Која боја никогаш не би ја носел?" },
+  { common: "What’s your favorite school subject?", mk: "Кој предмет ти беше омилен на училиште?", imposter: "Which subject did you dislike?", imposterMk: "Кој предмет не го сакаше?" },
+  { common: "What’s your dream job?", mk: "Која е твојата работа од соништата?", imposter: "What job sounds like a nightmare to you?", imposterMk: "Која работа ти звучи како кошмар?" },
+  { common: "What's a fun hobby you have?", mk: "Кое е твоето забавно хоби?", imposter: "Which hobby seems pointless to you?", imposterMk: "Кое хоби ти е бесмислено?" },
+  { common: "What's your favorite meal of the day?", mk: "Кој оброк ти е најомилен?", imposter: "Which meal do you often skip?", imposterMk: "Кој оброк најчесто го прескокнуваш?" }
+];
 function startGame() {
   const select = document.getElementById("player");
   playerName = select.value;
